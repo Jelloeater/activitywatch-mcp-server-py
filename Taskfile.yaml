@@ -1,0 +1,97 @@
+version: '3'
+vars:
+    BUILD_DIR: src/mcp_server_activitywatch
+    IMAGE_NAME: mcp-server-activitywatch
+    DOCKER_FILE: Dockerfile
+
+tasks:
+    default:
+        silent: true
+        interactive: false
+        deps:
+            -   task: format
+            -   task: security
+        cmds:
+            -   task: test
+    commit:
+        # Run all actions at same time
+        deps:
+            -   task: format
+            -   task: security
+            -   task: docs
+    publish:
+        -   task: security
+        -   task: build
+        - poetry publish
+    build:
+        env:
+            PIPENV_IGNORE_VIRTUALENVS: 1
+        deps: [ docs, clean ]
+        cmds:
+            - poetry version $(git describe --tags --abbrev=0)
+            - git-changelog -p -a -x >> CHANGELOG.md
+            - git add CHANGELOG.md
+            - poetry build
+    install:
+        - pip install . --upgrade
+    setup:
+        - sudo apt-get install git-extras -y
+        - python3 -m pip install pipx
+        - python3 -m pipx ensurepath
+        - pipx install poetry
+        - poetry install
+    test:
+        silent: false
+        interactive: false
+        cmds:
+#            - poetry run vulture --min-confidence 100 {{.BUILD_DIR}}
+#            - poetry run xenon --max-absolute C --max-modules B --max-average B {{.BUILD_DIR}}
+            #            - poetry run mypy --install-types --non-interactive
+            #            - poetry run mypy {{.BUILD_DIR}} # Little too aggressive
+            - poetry run pytest --cov --cov-fail-under=80 tests/
+            - poetry run pytest --cov --cov-fail-under=40 tests/test_cli.py #--typeguard-packages={{.BUILD_DIR}} # Leave typeguard off for now
+    clean:
+        - rm -rf dist
+        - rm -rf .mypy_cache
+        - poetry cache clear _default_cache --all  --no-interaction
+        - poetry cache clear PyPI --all  --no-interaction
+        - poetry check
+        - py3clean .
+    format:
+        silent: false
+        interactive: false
+        cmds:
+            - poetry run isort --atomic .
+            - poetry run black .
+            - poetry run autoflake {{.BUILD_DIR}}
+            - poetry run flake8 {{.BUILD_DIR}}
+    docs:
+        silent: false
+        interactive: false
+        cmds:
+            - rm -f CHANGELOG.md
+            - git-changelog -a -x >> CHANGELOG.md
+            # - poetry run mdformat CHANGELOG.md
+            - git add CHANGELOG.md
+            - rm -rf docs
+            - poetry run pdoc3 {{.BUILD_DIR}} -o docs -f
+            - poetry run pyreverse {{.BUILD_DIR}} -d docs
+            - poetry run mdformat docs
+            - poetry run mdToRst README.md >> ./docs/index.rst
+            - git add docs
+    security:
+        - poetry run whispers {{.BUILD_DIR}} # Check for security issues
+        - poetry run bandit --silent -r {{.BUILD_DIR}}
+        # - poetry run tartufo scan-local-repo .
+    install-hooks:
+        cmds:
+            - poetry run pre-commit install
+    remove-hooks:
+        ignore_error: true
+        cmds:
+            - poetry run pre-commit uninstall
+            - rm .git/hooks -rf
+    docker:
+        -   task: clean
+        - docker build . -t {{.IMAGE_NAME}}:latest -f {{.DOCKER_FILE}}
+        - docker run --env-file .env --rm --name {{.IMAGE_NAME}} {{.IMAGE_NAME}}:latest

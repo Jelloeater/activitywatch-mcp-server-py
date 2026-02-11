@@ -1,0 +1,33 @@
+name: Test
+
+on:
+    workflow_call:
+    pull_request: { }
+    push:
+        branches: [ main ]
+        tags: [ "*" ]
+#    workflow_dispatch:
+jobs:
+    test:
+        runs-on: "ubuntu-latest"
+        env: # These need to be set in the repo or the builds will fail
+          ACTIVITYWATCH_API_HOST: ${{ secrets.ACTIVITYWATCH_API_HOST }}
+          ACTIVITYWATCH_API_KEY: ${{ secrets.ACTIVITYWATCH_API_KEY }}
+        steps:
+            - uses: actions/checkout@v3
+            - run: tree
+            - run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+            - run: task setup
+            - run: task security
+            - uses: nick-fields/retry@v2
+              with:
+                timeout_minutes: 5
+                max_attempts: 3
+                retry_on: error
+                command: task test
+            - name: Build and publish to pypi
+              uses: JRubics/poetry-publish@v2.0
+              with:
+                  pypi_token: ${{ secrets.PYPI_TOKEN }}
+                  poetry_install_options: "--sync --no-root"
+                  poetry_publish_options: "--dry-run"

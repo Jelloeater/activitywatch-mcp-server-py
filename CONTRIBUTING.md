@@ -33,9 +33,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 This project and everyone participating in it is governed by the
 [/activitywatch-mcp-server-py Code of Conduct](https://github.com/Jelloeater/activitywatch-mcp-server-pyblob/master/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code. Please report unacceptable behavior
-to <jelloeater@gmail.com>.
-
-## I Have a Question
+to <jello@jelloeater.me>.
 
 > If you want to ask a question, we assume that you have read the available [Documentation](https://github.com/Jelloeater/activitywatch-mcp-server-py/tree/main/docs).
 
@@ -93,7 +91,7 @@ A good bug report shouldn't leave others needing to chase you up for more inform
 
 #### How Do I Submit a Good Bug Report?
 
-> You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead sensitive bugs must be sent by email to <jelloeater@gmail.com>.
+> You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead sensitive bugs must be sent by email to <jello@jelloeater.me>.
 
 <!-- You may add a PGP key to allow the messages to be sent encrypted as well. -->
 

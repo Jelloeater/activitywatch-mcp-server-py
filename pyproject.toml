@@ -28,35 +28,107 @@ Repository = "https://github.com/8bitgentleman/activitywatch-mcp-server"
 Issues = "https://github.com/8bitgentleman/activitywatch-mcp-server/issues"
 
 [project.scripts]
-mcp-server-activitywatch = "mcp_server_activitywatch:main"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.uv]
-dev-dependencies = [
-    "pyright>=1.1.389",
-    "ruff>=0.7.3",
-    "pytest>=8.0.0",
-    "pytest-asyncio>=0.21.0",
-    "pytest-httpx>=0.30.0",
-]
+mcp-server-activitywatch = "mcp_server_activitywatch.__init__:main"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-asyncio_mode = "auto"
-pythonpath = ["src"]
+pythonpath = ["."]
+testpaths = "tests/"
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "[%(asctime)s] [%(levelname)8s] --- %(message)s (%(filename)s:%(funcName)s():%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
-[tool.pyright]
-include = ["src"]
-strict = ["src"]
-typeCheckingMode = "standard"
+[tool.coverage.run]
+omit = [
+    "tests/*",
+]
 
-[tool.ruff]
-line-length = 100
-target-version = "py310"
+[tool.black]
+line-length = 120
+skip-string-normalization = true
 
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP"]
-ignore = []
+[tool.flake8]
+exclude = ["./tests"]
+max-line-length = 120
+count = false
+statistics = true
+diff = true
+format = "pylint"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = "True"
+force_grid_wrap = 0
+use_parentheses = "True"
+line_length = 120
+profile = "black"
+
+[tool.tartufo]
+repo-path = "."
+regex = true
+entropy = true
+exclude-path-patterns = [
+    {path-pattern = 'poetry.lock'},
+    {path-pattern = 'pyproject.toml'},
+    # To not have to escape `\` in regexes, use single quoted
+    # TOML 'literal strings'
+    {path-pattern = 'docs/source/(.*)\.rst'},
+]
+exclude-entropy-patterns = [
+    {path-pattern = '\.github/workflows/.*\.yml', pattern = 'uses: .*@[a-zA-Z0-9]{40}', reason = 'GitHub Actions'},
+    {path-pattern = 'poetry.lock', pattern = '.'},
+    {path-pattern = 'Pipfile.lock', pattern = '.'},
+    {path-pattern = 'README\.md', pattern = '.'},
+    {path-pattern = 'index\.rst', pattern = '.'},
+    {path-pattern = 'techstack\.yml', pattern = '.'},
+    {path-pattern = 'techstack\.md', pattern = '.'},
+]
+
+[tool.poetry.group.test.dependencies]
+setuptools = "*"
+pytest = "*"
+pytest-cov = "*"
+python-dotenv = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest-pycharm = "*"
+autoflake = "*"
+pre-commit = "*"
+vulture = "*"
+isort = "*"
+xenon = "*"
+black = "*"
+typing_extensions = "*"
+pdoc3 = "*"
+pylint = "*"
+bandit = "*"
+whispers = "*"
+mdformat-gfm = "*"
+mdformat-frontmatter = "*"
+flake8 = "*"
+Flake8-pyproject = "*"
+tartufo = "*"
+mdToRst = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.taskipy.tasks]
+default = "task test"
+commit = "task format && task security && task docs"
+publish = "task security && task build && poetry publish"
+build = "task clean && task docs && git-changelog -p -a -x >> CHANGELOG.md && git add CHANGELOG.md && poetry build"
+install = "pip install . --upgrade"
+setup = "task install-hooks"
+test = "poetry run pytest --cov --cov-fail-under=80 tests/"
+clean = "task clean"
+format = "task format"
+docs = "task docs"
+security = "task security"
+install-hooks = "task install-hooks"
+remove-hooks = "task remove-hooks"
+docker = "task docker"
+
+[tool.taskipy.install]
+install = true

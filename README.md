@@ -1,5 +1,11 @@
 # ActivityWatch MCP Server
 
+[![Test](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/test.yml)
+[![CodeQL](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/codeql.yml)
+[![PyPI - Status](https://img.shields.io/pypi/status/mcp-server-activitywatch)](https://pypi.org/project/mcp-server-activitywatch/)
+[![PyPI](https://img.shields.io/pypi/v/mcp-server-activitywatch)](https://pypi.org/project/mcp-server-activitywatch/)
+[![GitHub](https://img.shields.io/github/license/Jelloeater/activitywatch-mcp-server-py)](https://github.com/Jelloeater/activitywatch-mcp-server-py/blob/main/LICENSE)
+
 A Model Context Protocol (MCP) server that connects to [ActivityWatch](https://activitywatch.net/), allowing LLMs like Claude to interact with your time tracking data.
 
 > **Version 2.0**: Now implemented in Python with native UVX support! Originally built in TypeScript, this server has been completely rewritten in Python for better integration with the Python ecosystem and simplified deployment via `uvx`.
@@ -328,9 +334,54 @@ The most frequent error is when query statements are split into separate array e
 }
 ```
 
-## Development
+## Structure
+
+**Class Model**
+
+```mermaid
+flowchart LR
+  subgraph "MCP Server"
+    direction TB
+    classDef server fill:#e1f5fe
+    classDef tool fill:#f3e5f6
+    classDef handler fill:#fff3e0
+    
+    A[server.py] --> B[tools/]
+    A --> C[server.py]
+    
+    class A server
+    class B tool
+    class C handler
+  end
+  
+  subgraph "ActivityWatch API"
+    direction TB
+    classDef api fill:#e8f5e8
+    
+    D[localhost:5600]
+    
+    class D api
+  end
+  
+  subgraph "MCP Client"
+    direction TB
+    classDef client fill:#fce4ec
+    
+    E[Claude Desktop]
+    F[OpenCode]
+    
+    class E client
+    class F client
+  end
+  
+  A --> D
+  E --> A
+  F --> A
+```
 
 ### Project Structure
+
+```
 
 ```
 activitywatch-mcp-server/
