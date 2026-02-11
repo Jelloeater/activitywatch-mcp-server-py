@@ -1,0 +1,71 @@
+# .pre-commit-config.yaml @ Base Dir
+# See https://pre-commit.com/ for usage and config
+#### Install
+# pip install pre-commit
+# pip install --upgrade pre-commit
+# pre-commit install
+#### Uninstall
+# pre-commit uninstall
+# rm .git/hooks -rf
+#### To run manually
+# pre-commit run --all-files --verbose
+minimum_pre_commit_version: "3.2"
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+          - id: check-case-conflict
+          - id: check-docstring-first
+          - id: check-executables-have-shebangs
+          - id: check-json
+          - id: check-shebang-scripts-are-executable
+          - id: check-symlinks
+          - id: check-toml
+          - id: check-vcs-permalinks
+          - id: check-xml
+          - id: check-yaml
+          - id: destroyed-symlinks
+          - id: check-merge-conflict
+          - id: end-of-file-fixer
+          - id: check-added-large-files
+          - id: fix-byte-order-marker
+          - id: check-symlinks
+          - id: check-toml
+          - id: forbid-new-submodules
+          - id: trailing-whitespace
+          - id: mixed-line-ending
+          # - id: pretty-format-json
+          #   args:
+          #     - "--autofix"
+          #     - "--indent=4"
+          #     - "--no-sort-keys"
+
+    #   - repo: https://github.com/godaddy/tartufo
+    #     rev: v5.0.2
+    #     hooks:
+    #       - id: tartufo
+    #         args:
+    #           - --entropy-sensitivity
+    #           - "80"
+    #           - scan-local-repo
+    #           - --exclude-submodules
+    #           - "."
+
+    - repo: local
+      hooks:
+          - id: prettier
+            name: Prettier
+            language: node
+            entry: prettier
+            args: [--write, --ignore-unknown, --no-bracket-spacing]
+            types: [file]
+            additional_dependencies:
+                - prettier@3.4.2
+
+    - repo: https://github.com/adrienverge/yamllint.git
+      rev: v1.35.1
+      hooks:
+          - id: yamllint
+            additional_dependencies: [PyYAML]
+            args:
+                - --strict
