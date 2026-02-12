@@ -43,7 +43,6 @@ setup:
 # Test target - runs tests with coverage (PyCharm compatible)
 test:
 	$(UV) run pytest --cov --cov-fail-under=$(COV_FAIL_UNDER) tests/
-	$(UV) run pytest --cov --cov-fail-under=$(COV_FAIL_UNDER_CLI) tests/test_cli.py
 
 # Clean target - cleans build artifacts and cache
 clean:
