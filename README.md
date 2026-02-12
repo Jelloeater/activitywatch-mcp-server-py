@@ -26,24 +26,24 @@ A Model Context Protocol (MCP) server that connects to [ActivityWatch](https://a
 
 ### Using UV (Recommended)
 
-When using [`uv`](https://docs.astral.sh/uv/) no specific installation is needed. We will use [`uvx`](https://docs.astral.sh/uv/guides/tools/) to directly run _mcp-server-activitywatch_.
+When using [`uv`](https://docs.astral.sh/uv/) no specific installation is needed. We will use [`uvx`](https://docs.astral.sh/uv/guides/tools/) to directly run _activitywatch-mcp-server-py_.
 
 ```bash
-uvx mcp-server-activitywatch
+uvx activitywatch-mcp-server-py
 ```
 
 ### Using pip
 
-Alternatively you can install `mcp-server-activitywatch` via pip:
+Alternatively you can install `activitywatch-mcp-server-py` via pip:
 
 ```bash
-pip install mcp-server-activitywatch
+pip install activitywatch-mcp-server-py
 ```
 
 After installation, you can run it as a script using:
 
 ```bash
-python -m mcp_server_activitywatch
+python -m activitywatch_mcp_server_py
 ```
 
 ## Prerequisites
@@ -69,7 +69,7 @@ Add to your Claude Desktop configuration file:
     "mcpServers": {
         "activitywatch": {
             "command": "uvx",
-            "args": ["mcp-server-activitywatch"]
+            "args": ["activitywatch-mcp-server-py"]
         }
     }
 }
@@ -85,7 +85,7 @@ Add to your Claude Desktop configuration file:
     "mcpServers": {
         "activitywatch": {
             "command": "python",
-            "args": ["-m", "mcp_server_activitywatch"]
+            "args": ["-m", "activitywatch_mcp_server_py"]
         }
     }
 }
@@ -102,7 +102,7 @@ Add to your Claude Desktop configuration file:
         "activitywatch": {
             "command": "uvx",
             "args": [
-                "mcp-server-activitywatch",
+                "activitywatch-mcp-server-py",
                 "--api-base",
                 "http://localhost:5600/api/0"
             ],
@@ -131,7 +131,7 @@ OpenCode supports MCP servers out of the box. Add the server configuration to yo
         "servers": {
             "activitywatch": {
                 "command": "uvx",
-                "args": ["mcp-server-activitywatch"]
+                "args": ["activitywatch-mcp-server-py"]
             }
         }
     }
@@ -149,7 +149,7 @@ OpenCode supports MCP servers out of the box. Add the server configuration to yo
         "servers": {
             "activitywatch": {
                 "command": "python",
-                "args": ["-m", "mcp_server_activitywatch"]
+                "args": ["-m", "activitywatch_mcp_server_py"]
             }
         }
     }
@@ -175,7 +175,7 @@ Crush also supports MCP servers. Configure it in your Crush settings:
     "mcpServers": {
         "activitywatch": {
             "command": "uvx",
-            "args": ["mcp-server-activitywatch"]
+            "args": ["activitywatch-mcp-server-py"]
         }
     }
 }
@@ -191,7 +191,7 @@ Crush also supports MCP servers. Configure it in your Crush settings:
     "mcpServers": {
         "activitywatch": {
             "command": "python",
-            "args": ["-m", "mcp_server_activitywatch"]
+            "args": ["-m", "activitywatch_mcp_server_py"]
         }
     }
 }
@@ -306,13 +306,13 @@ You can customize this using:
 1. **Command-line argument:**
 
     ```bash
-    uvx mcp-server-activitywatch --api-base http://localhost:5600/api/0
+    uvx activitywatch-mcp-server-py --api-base http://localhost:5600/api/0
     ```
 
 2. **Environment variable:**
     ```bash
     export AW_API_BASE=http://localhost:5600/api/0
-    uvx mcp-server-activitywatch
+    uvx activitywatch-mcp-server-py
     ```
 
 ## Troubleshooting
@@ -412,7 +412,7 @@ flowchart LR
 
 activitywatch-mcp-server/
 ├── src/
-│ └── mcp_server_activitywatch/
+│ └── activitywatch_mcp_server_py/
 │ ├── **init**.py # Entry point and CLI
 │ ├── server.py # MCP server setup
 │ └── tools/ # Individual tool implementations
@@ -456,7 +456,7 @@ pytest tests/ -v
 pytest tests/test_list_buckets.py -v
 
 # Run with coverage
-pytest tests/ --cov=src/mcp_server_activitywatch --cov-report=html
+pytest tests/ --cov=src/activitywatch_mcp_server_py --cov-report=html
 
 # Run type checking
 pyright src/
@@ -470,13 +470,13 @@ ruff check src/
 ```bash
 # Run the server directly
 source .venv/bin/activate
-mcp-server-activitywatch
+activitywatch-mcp-server-py
 
 # Test with custom API endpoint
-mcp-server-activitywatch --api-base http://localhost:5600/api/0
+activitywatch-mcp-server-py --api-base http://localhost:5600/api/0
 
 # Test with environment variable
-AW_API_BASE=http://localhost:5600/api/0 mcp-server-activitywatch
+AW_API_BASE=http://localhost:5600/api/0 activitywatch-mcp-server-py
 ```
 
 ### Debugging
@@ -484,7 +484,7 @@ AW_API_BASE=http://localhost:5600/api/0 mcp-server-activitywatch
 You can use the MCP inspector to debug the server:
 
 ```bash
-npx @modelcontextprotocol/inspector uvx mcp-server-activitywatch
+npx @modelcontextprotocol/inspector uvx activitywatch-mcp-server-py
 ```
 
 This will open a web interface where you can:
@@ -498,7 +498,7 @@ This will open a web interface where you can:
 
 To add a new tool:
 
-1. Create a new file in `src/mcp_server_activitywatch/tools/` (e.g., `my_tool.py`)
+1. Create a new file in `src/activitywatch_mcp_server_py/tools/` (e.g., `my_tool.py`)
 2. Implement the schema function and handler:
 
     ```python
@@ -522,7 +522,7 @@ To add a new tool:
 3. Register the tool in `server.py`:
 
     ```python
-    from mcp_server_activitywatch.tools.my_tool import my_tool_schema, my_tool_handler
+    from activitywatch_mcp_server_py.tools.my_tool import my_tool_schema, my_tool_handler
 
     # In list_tools handler:
     Tool(
@@ -551,7 +551,7 @@ python -m build
 twine upload dist/*
 
 # Test installation
-uvx mcp-server-activitywatch
+uvx activitywatch-mcp-server-py
 ```
 
 ## Contributing
