@@ -84,51 +84,50 @@ exclude-entropy-patterns = [
     {path-pattern = 'techstack\.md', pattern = '.'},
 ]
 
-[tool.poetry.group.test.dependencies]
-setuptools = "*"
-pytest = "*"
-pytest-cov = "*"
-python-dotenv = "*"
+[tool.uv]
+cache-dir = ".uv-cache"
 
-[tool.poetry.group.dev.dependencies]
-pytest-pycharm = "*"
-autoflake = "*"
-pre-commit = "*"
-vulture = "*"
-isort = "*"
-xenon = "*"
-black = "*"
-typing_extensions = "*"
-pdoc3 = "*"
-pylint = "*"
-bandit = "*"
-whispers = "*"
-mdformat-gfm = "*"
-mdformat-frontmatter = "*"
-flake8 = "*"
-Flake8-pyproject = "*"
-tartufo = "*"
-mdToRst = "*"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "python-dotenv",
+    "pytest-pycharm",
+    "autoflake",
+    "pre-commit",
+    "vulture",
+    "isort",
+    "xenon",
+    "black",
+    "typing_extensions",
+    "pdoc3",
+    "pylint",
+    "bandit",
+    "whispers",
+    "mdformat-gfm",
+    "mdformat-frontmatter",
+    "flake8",
+    "Flake8-pyproject",
+    "tartufo",
+    "mdToRst",
+    "setuptools",
+]
 
 [tool.taskipy.tasks]
 default = "task test"
 commit = "task format && task security && task docs"
-publish = "task security && task build && poetry publish"
-build = "task clean && task docs && git-changelog -p -a -x >> CHANGELOG.md && git add CHANGELOG.md && poetry build"
-install = "pip install . --upgrade"
+publish = "task security && task build && uv pip install ."
+build = "task clean && task docs && git-changelog -p -a -x >> CHANGELOG.md && git add CHANGELOG.md && uv pip install ."
+install = "uv pip install . --upgrade"
 setup = "task install-hooks"
-test = "poetry run pytest --cov --cov-fail-under=80 tests/"
+test = "uv run pytest --cov --cov-fail-under=80 tests/"
 clean = "task clean"
 format = "task format"
 docs = "task docs"
 security = "task security"
 install-hooks = "task install-hooks"
 remove-hooks = "task remove-hooks"
-docker = "task docker"
+docker = "# Docker commands removed - using UV for deployment instead"
 
 [tool.taskipy.install]
 install = true

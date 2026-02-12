@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 vars:
     BUILD_DIR: src/mcp_server_activitywatch
     IMAGE_NAME: mcp-server-activitywatch
@@ -9,24 +9,24 @@ tasks:
         silent: true
         interactive: false
         deps:
-            -   task: format
-            -   task: security
+            - task: format
+            - task: security
         cmds:
-            -   task: test
+            - task: test
     commit:
         # Run all actions at same time
         deps:
-            -   task: format
-            -   task: security
-            -   task: docs
+            - task: format
+            - task: security
+            - task: docs
     publish:
-        -   task: security
-        -   task: build
+        - task: security
+        - task: build
         - poetry publish
     build:
         env:
             PIPENV_IGNORE_VIRTUALENVS: 1
-        deps: [ docs, clean ]
+        deps: [docs, clean]
         cmds:
             - poetry version $(git describe --tags --abbrev=0)
             - git-changelog -p -a -x >> CHANGELOG.md
@@ -44,8 +44,8 @@ tasks:
         silent: false
         interactive: false
         cmds:
-#            - poetry run vulture --min-confidence 100 {{.BUILD_DIR}}
-#            - poetry run xenon --max-absolute C --max-modules B --max-average B {{.BUILD_DIR}}
+            #            - poetry run vulture --min-confidence 100 {{.BUILD_DIR}}
+            #            - poetry run xenon --max-absolute C --max-modules B --max-average B {{.BUILD_DIR}}
             #            - poetry run mypy --install-types --non-interactive
             #            - poetry run mypy {{.BUILD_DIR}} # Little too aggressive
             - poetry run pytest --cov --cov-fail-under=80 tests/
@@ -92,6 +92,4 @@ tasks:
             - poetry run pre-commit uninstall
             - rm .git/hooks -rf
     docker:
-        -   task: clean
-        - docker build . -t {{.IMAGE_NAME}}:latest -f {{.DOCKER_FILE}}
-        - docker run --env-file .env --rm --name {{.IMAGE_NAME}} {{.IMAGE_NAME}}:latest
+        # Docker commands removed - using UV for deployment instead
