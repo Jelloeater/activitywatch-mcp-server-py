@@ -63,7 +63,7 @@ jobs:
         runs-on: ubuntu-latest
         environment:
             name: pypi
-            url: https://pypi.org/p/mcp-server-activitywatch
+            url: https://pypi.org/p/activitywatch-mcp-server-py
         permissions:
             id-token: write
         steps:
