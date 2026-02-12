@@ -2,8 +2,8 @@
 
 [![Test](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/test.yml)
 [![CodeQL](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/codeql.yml)
-[![PyPI - Status](https://img.shields.io/pypi/status/mcp-server-activitywatch)](https://pypi.org/project/mcp-server-activitywatch/)
-[![PyPI](https://img.shields.io/pypi/v/mcp-server-activitywatch)](https://pypi.org/project/mcp-server-activitywatch/)
+[![PyPI - Status](https://img.shields.io/pypi/status/activitywatch-mcp-server-py)](https://pypi.org/project/activitywatch-mcp-server-py/)
+[![PyPI](https://img.shields.io/pypi/v/activitywatch-mcp-server-py)](https://pypi.org/project/activitywatch-mcp-server-py/)
 [![GitHub](https://img.shields.io/github/license/Jelloeater/activitywatch-mcp-server-py)](https://github.com/Jelloeater/activitywatch-mcp-server-py/blob/main/LICENSE)
 
 A Model Context Protocol (MCP) server that connects to [ActivityWatch](https://activitywatch.net/), allowing LLMs like Claude to interact with your time tracking data.
