@@ -2,32 +2,25 @@ name: Test
 
 on:
     workflow_call:
-    pull_request: { }
+    pull_request: {}
     push:
-        branches: [ main ]
-        tags: [ "*" ]
-#    workflow_dispatch:
+        branches: [main]
+        tags: ["*"]
+
 jobs:
     test:
         runs-on: "ubuntu-latest"
-        env: # These need to be set in the repo or the builds will fail
-          ACTIVITYWATCH_API_HOST: ${{ secrets.ACTIVITYWATCH_API_HOST }}
-          ACTIVITYWATCH_API_KEY: ${{ secrets.ACTIVITYWATCH_API_KEY }}
         steps:
-            - uses: actions/checkout@v3
-            - run: tree
-            - run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
-            - run: task setup
-            - run: task security
-            - uses: nick-fields/retry@v2
+            - uses: actions/checkout@v4
+            - name: Install uv
+              uses: astral-sh/setup-uv@v3
               with:
-                timeout_minutes: 5
-                max_attempts: 3
-                retry_on: error
-                command: task test
-            - name: Build and publish to pypi
-              uses: JRubics/poetry-publish@v2.0
-              with:
-                  pypi_token: ${{ secrets.PYPI_TOKEN }}
-                  poetry_install_options: "--sync --no-root"
-                  poetry_publish_options: "--dry-run"
+                  version: "latest"
+            - name: Install dependencies
+              run: uv pip install -e ".[dev]"
+            - name: Run security checks
+              run: make security
+            - name: Run tests
+              run: make test
+            - name: Build package (dry-run)
+              run: uv build
