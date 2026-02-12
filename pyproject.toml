@@ -28,7 +28,7 @@ Repository = "https://github.com/Jelloeater/activitywatch-mcp-server-py"
 Issues = "https://github.com/Jelloeater/activitywatch-mcp-server-py/issues"
 
 [project.scripts]
-mcp-server-activitywatch = "mcp_server_activitywatch.__init__:main"
+activitywatch-mcp-server-py = "mcp_server_activitywatch.__init__:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
