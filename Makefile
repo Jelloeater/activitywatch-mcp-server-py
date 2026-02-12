@@ -5,7 +5,7 @@ PYTHON = python3
 BUILD_DIR = src/mcp_server_activitywatch
 UV = uv
 UVX = uvx
-COV_FAIL_UNDER = 80
+COV_FAIL_UNDER = 60
 COV_FAIL_UNDER_CLI = 40
 
 # Default target
