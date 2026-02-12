@@ -61,11 +61,6 @@ jobs:
     publish:
         needs: test
         runs-on: ubuntu-latest
-        environment:
-            name: pypi
-            url: https://pypi.org/p/activitywatch-mcp-server-py
-        permissions:
-            id-token: write
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -76,4 +71,4 @@ jobs:
             - name: Build package
               run: uv build
             - name: Publish to PyPI
-              uses: pypa/gh-action-pypi-publish@release/v1
+              run: uv publish --token "${{ secrets.PYPI_API_TOKEN }}"
