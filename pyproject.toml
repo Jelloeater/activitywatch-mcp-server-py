@@ -101,6 +101,8 @@ cache-dir = ".uv-cache"
 [dependency-groups]
 dev = [
     "pytest",
+    "pytest-asyncio",
+    "pytest-httpx",
     "pytest-cov",
     "python-dotenv",
     "pytest-pycharm",
