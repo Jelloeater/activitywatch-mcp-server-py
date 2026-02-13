@@ -1,0 +1,588 @@
+Metadata-Version: 2.4
+Name: activitywatch-mcp-server-py
+Version: 2.0.1
+Summary: A Model Context Protocol server providing tools to interact with ActivityWatch time tracking data
+Author: Matt Vogel
+License: MIT
+Project-URL: Homepage, https://github.com/Jelloeater/activitywatch-mcp-server-py
+Project-URL: Repository, https://github.com/Jelloeater/activitywatch-mcp-server-py
+Project-URL: Issues, https://github.com/Jelloeater/activitywatch-mcp-server-py/issues
+Keywords: activitywatch,mcp,llm,time-tracking,model-context-protocol
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: fastmcp>=3.0.0rc1
+Requires-Dist: pydantic>=2.0.0
+Dynamic: license-file
+
+# ActivityWatch MCP Server
+
+[![Test](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/test.yml)
+[![CodeQL](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Jelloeater/activitywatch-mcp-server-py/actions/workflows/codeql.yml)
+[![PyPI - Status](https://img.shields.io/pypi/status/mcp-server-activitywatch)](https://pypi.org/project/mcp-server-activitywatch/)
+[![PyPI](https://img.shields.io/pypi/v/mcp-server-activitywatch)](https://pypi.org/project/mcp-server-activitywatch/)
+[![GitHub](https://img.shields.io/github/license/Jelloeater/activitywatch-mcp-server-py)](https://github.com/Jelloeater/activitywatch-mcp-server-py/blob/main/LICENSE)
+
+A Model Context Protocol (MCP) server that connects to [ActivityWatch](https://activitywatch.net/), allowing LLMs like Claude to interact with your time tracking data.
+
+> **Version 2.0**: Now implemented in Python with native UVX support! Originally built in TypeScript, this server has been completely rewritten in Python for better integration with the Python ecosystem and simplified deployment via `uvx`.
+
+<a href="https://glama.ai/mcp/servers/msnzvab06f">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/msnzvab06f/badge" alt="ActivityWatch Server MCP server" />
+</a>
+
+## Features
+
+- **List Buckets**: View all available ActivityWatch buckets
+- **Run Queries**: Execute powerful AQL (ActivityWatch Query Language) queries
+- **Get Raw Events**: Retrieve events directly from any bucket
+- **Get Settings**: Access ActivityWatch configuration settings
+- **Query Examples**: Get helpful examples of properly formatted queries
+
+## Installation
+
+### Using UV (Recommended)
+
+When using [`uv`](https://docs.astral.sh/uv/) no specific installation is needed. We will use [`uvx`](https://docs.astral.sh/uv/guides/tools/) to directly run _mcp-server-activitywatch_.
+
+```bash
+uvx mcp-server-activitywatch
+```
+
+### Using pip
+
+Alternatively you can install `mcp-server-activitywatch` via pip:
+
+```bash
+pip install mcp-server-activitywatch
+```
+
+After installation, you can run it as a script using:
+
+```bash
+python -m mcp_server_activitywatch
+```
+
+## Prerequisites
+
+- [ActivityWatch](https://activitywatch.net/) installed and running
+- Python 3.10 or higher (automatically handled by uvx)
+- An MCP client (Claude Desktop, OpenCode, Crush, etc.)
+
+## Configuration
+
+### Claude Desktop
+
+Add to your Claude Desktop configuration file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+<details>
+<summary>Using uvx (recommended)</summary>
+
+```json
+{
+    "mcpServers": {
+        "activitywatch": {
+            "command": "uvx",
+            "args": ["mcp-server-activitywatch"]
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>Using pip installation</summary>
+
+```json
+{
+    "mcpServers": {
+        "activitywatch": {
+            "command": "python",
+            "args": ["-m", "mcp_server_activitywatch"]
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>With custom API endpoint</summary>
+
+```json
+{
+    "mcpServers": {
+        "activitywatch": {
+            "command": "uvx",
+            "args": [
+                "mcp-server-activitywatch",
+                "--api-base",
+                "http://localhost:5600/api/0"
+            ],
+            "env": {
+                "AW_API_BASE": "http://localhost:5600/api/0"
+            }
+        }
+    }
+}
+```
+
+</details>
+
+After configuration, restart Claude Desktop and look for the MCP icon to confirm it's working.
+
+### OpenCode
+
+OpenCode supports MCP servers out of the box. Add the server configuration to your OpenCode settings:
+
+<details>
+<summary>Using uvx</summary>
+
+```json
+{
+    "mcp": {
+        "servers": {
+            "activitywatch": {
+                "command": "uvx",
+                "args": ["mcp-server-activitywatch"]
+            }
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>Using pip installation</summary>
+
+```json
+{
+    "mcp": {
+        "servers": {
+            "activitywatch": {
+                "command": "python",
+                "args": ["-m", "mcp_server_activitywatch"]
+            }
+        }
+    }
+}
+```
+
+</details>
+
+You can add this to:
+
+- **User Settings (JSON)**: Press `Ctrl+Shift+P` and select "Preferences: Open User Settings (JSON)"
+- **Workspace Settings**: Create `.vscode/mcp.json` in your workspace
+
+### Crush
+
+Crush also supports MCP servers. Configure it in your Crush settings:
+
+<details>
+<summary>Using uvx</summary>
+
+```json
+{
+    "mcpServers": {
+        "activitywatch": {
+            "command": "uvx",
+            "args": ["mcp-server-activitywatch"]
+        }
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>Using pip installation</summary>
+
+```json
+{
+    "mcpServers": {
+        "activitywatch": {
+            "command": "python",
+            "args": ["-m", "mcp_server_activitywatch"]
+        }
+    }
+}
+```
+
+</details>
+
+## Available Tools
+
+### activitywatch-list-buckets
+
+Lists all available ActivityWatch buckets with optional type filtering.
+
+**Parameters:**
+
+- `type` (optional): Filter buckets by type (e.g., "window", "web", "afk")
+- `include_data` (optional): Include bucket data in response
+
+### activitywatch-run-query
+
+Run a query in ActivityWatch's query language (AQL).
+
+**Parameters:**
+
+- `timeperiods`: Time period(s) to query formatted as array of strings. For date ranges, use format: `["2024-10-28/2024-10-29"]`
+- `query`: Array of query statements in ActivityWatch Query Language, where each item is a complete query with statements separated by semicolons
+- `name` (optional): Name for the query (used for caching)
+
+**IMPORTANT**: Each query string should contain a complete query with multiple statements separated by semicolons.
+
+**Example request format:**
+
+```json
+{
+    "timeperiods": ["2024-10-28/2024-10-29"],
+    "query": [
+        "events = query_bucket('aw-watcher-window_hostname'); RETURN = events;"
+    ]
+}
+```
+
+Note that:
+
+- `timeperiods` should have pre-formatted date ranges with slashes
+- Each item in the `query` array is a complete query with all statements
+
+### activitywatch-get-events
+
+Get raw events from an ActivityWatch bucket.
+
+**Parameters:**
+
+- `bucket_id`: ID of the bucket to fetch events from
+- `start` (optional): Start date/time in ISO format
+- `end` (optional): End date/time in ISO format
+- `limit` (optional): Maximum number of events to return
+
+### activitywatch-get-settings
+
+Get ActivityWatch settings from the server.
+
+**Parameters:**
+
+- `key` (optional): Get a specific settings key instead of all settings
+
+### activitywatch-query-examples
+
+Get examples of properly formatted queries for the ActivityWatch MCP server. This tool takes no parameters and returns helpful examples.
+
+## Example Queries
+
+Here are some example queries you can try:
+
+- **List all your buckets**: "What ActivityWatch buckets do I have?"
+- **Get application usage summary**: "Can you show me which applications I've used the most today?"
+- **View browsing history**: "What websites have I spent the most time on today?"
+- **Check productivity**: "How much time have I spent in productivity apps today?"
+- **View settings**: "What are my ActivityWatch settings?" or "Can you check a specific setting in ActivityWatch?"
+
+## Query Language Examples
+
+ActivityWatch uses a simple query language. Here are some common patterns:
+
+```aql
+// Get window events
+window_events = query_bucket(find_bucket("aw-watcher-window_"));
+RETURN = window_events;
+
+// Get only when not AFK
+afk_events = query_bucket(find_bucket("aw-watcher-afk_"));
+not_afk = filter_keyvals(afk_events, "status", ["not-afk"]);
+window_events = filter_period_intersect(window_events, not_afk);
+RETURN = window_events;
+
+// Group by app
+window_events = query_bucket(find_bucket("aw-watcher-window_"));
+events_by_app = merge_events_by_keys(window_events, ["app"]);
+RETURN = sort_by_duration(events_by_app);
+
+// Filter by app name
+window_events = query_bucket(find_bucket("aw-watcher-window_"));
+code_events = filter_keyvals(window_events, "app", ["Code"]);
+RETURN = code_events;
+```
+
+## Configuration Options
+
+The server connects to the ActivityWatch API at `http://localhost:5600/api/0` by default.
+
+You can customize this using:
+
+1. **Command-line argument:**
+
+    ```bash
+    uvx mcp-server-activitywatch --api-base http://localhost:5600/api/0
+    ```
+
+2. **Environment variable:**
+    ```bash
+    export AW_API_BASE=http://localhost:5600/api/0
+    uvx mcp-server-activitywatch
+    ```
+
+## Troubleshooting
+
+### ActivityWatch Not Running
+
+If ActivityWatch isn't running, the server will show connection errors. Make sure ActivityWatch is running and accessible at http://localhost:5600.
+
+### Query Errors
+
+If you're encountering query errors:
+
+1. Check your query syntax
+2. Make sure the bucket IDs are correct
+3. Verify that the timeperiods contain data
+4. Check ActivityWatch logs for more details
+5. Use the `activitywatch-query-examples` tool to see properly formatted examples
+
+### Query Formatting Issues
+
+The most frequent error is when query statements are split into separate array elements instead of being combined in one string:
+
+**❌ INCORRECT:**
+
+```json
+{
+    "query": [
+        "browser_events = query_bucket('aw-watcher-web');",
+        "afk_events = query_bucket('aw-watcher-afk');",
+        "RETURN = events;"
+    ],
+    "timeperiods": ["2024-10-28/2024-10-29"]
+}
+```
+
+**✅ CORRECT:**
+
+```json
+{
+    "timeperiods": ["2024-10-28/2024-10-29"],
+    "query": [
+        "browser_events = query_bucket('aw-watcher-web'); afk_events = query_bucket('aw-watcher-afk'); RETURN = events;"
+    ]
+}
+```
+
+## Structure
+
+**Class Model**
+
+```mermaid
+flowchart LR
+  subgraph "MCP Server"
+    direction TB
+    classDef server fill:#e1f5fe
+    classDef tool fill:#f3e5f6
+    classDef handler fill:#fff3e0
+
+    A[server.py] --> B[tools/]
+    A --> C[server.py]
+
+    class A server
+    class B tool
+    class C handler
+  end
+
+  subgraph "ActivityWatch API"
+    direction TB
+    classDef api fill:#e8f5e8
+
+    D[localhost:5600]
+
+    class D api
+  end
+
+  subgraph "MCP Client"
+    direction TB
+    classDef client fill:#fce4ec
+
+    E[Claude Desktop]
+    F[OpenCode]
+
+    class E client
+    class F client
+  end
+
+  A --> D
+  E --> A
+  F --> A
+```
+
+### Project Structure
+
+```
+
+```
+
+activitywatch-mcp-server/
+├── src/
+│ └── mcp_server_activitywatch/
+│ ├── **init**.py # Entry point and CLI
+│ ├── server.py # MCP server setup
+│ └── tools/ # Individual tool implementations
+│ ├── list_buckets.py
+│ ├── run_query.py
+│ ├── get_events.py
+│ ├── get_settings.py
+│ └── query_examples.py
+├── tests/ # Test suite
+│ ├── conftest.py
+│ ├── test_list_buckets.py
+│ ├── test_run_query.py
+│ └── test_get_settings.py
+├── pyproject.toml # Project configuration
+└── README.md
+
+````
+
+### Setup Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/8bitgentleman/activitywatch-mcp-server.git
+cd activitywatch-mcp-server
+
+# Create virtual environment and install dependencies
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in editable mode with dev dependencies
+uv pip install -e ".[dev]"
+````
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run specific test file
+pytest tests/test_list_buckets.py -v
+
+# Run with coverage
+pytest tests/ --cov=src/mcp_server_activitywatch --cov-report=html
+
+# Run type checking
+pyright src/
+
+# Run linting
+ruff check src/
+```
+
+### Testing the Server Locally
+
+```bash
+# Run the server directly
+source .venv/bin/activate
+mcp-server-activitywatch
+
+# Test with custom API endpoint
+mcp-server-activitywatch --api-base http://localhost:5600/api/0
+
+# Test with environment variable
+AW_API_BASE=http://localhost:5600/api/0 mcp-server-activitywatch
+```
+
+### Debugging
+
+You can use the MCP inspector to debug the server:
+
+```bash
+npx @modelcontextprotocol/inspector uvx mcp-server-activitywatch
+```
+
+This will open a web interface where you can:
+
+- See all available tools
+- Test tool calls with custom parameters
+- View request/response data
+- Debug server communication
+
+### Adding New Tools
+
+To add a new tool:
+
+1. Create a new file in `src/mcp_server_activitywatch/tools/` (e.g., `my_tool.py`)
+2. Implement the schema function and handler:
+
+    ```python
+    from mcp.types import TextContent
+    from typing import Any
+
+    def my_tool_schema() -> dict[str, Any]:
+        return {
+            "type": "object",
+            "properties": {
+                "param": {"type": "string", "description": "Parameter description"}
+            },
+            "required": ["param"]
+        }
+
+    async def my_tool_handler(api_base: str, arguments: dict[str, Any]) -> list[TextContent]:
+        # Implementation here
+        return [TextContent(type="text", text="Result")]
+    ```
+
+3. Register the tool in `server.py`:
+
+    ```python
+    from mcp_server_activitywatch.tools.my_tool import my_tool_schema, my_tool_handler
+
+    # In list_tools handler:
+    Tool(
+        name="activitywatch-my-tool",
+        description="Tool description",
+        inputSchema=my_tool_schema(),
+    ),
+
+    # In call_tool handler:
+    case "activitywatch-my-tool":
+        return await my_tool_handler(api_base, arguments)
+    ```
+
+4. Write tests in `tests/test_my_tool.py`
+
+### Release Process
+
+The package is designed to be published to PyPI for easy installation via `uvx`:
+
+```bash
+# Update version in pyproject.toml
+# Build the package
+python -m build
+
+# Upload to PyPI (requires PyPI credentials)
+twine upload dist/*
+
+# Test installation
+uvx mcp-server-activitywatch
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+[MIT](LICENSE)

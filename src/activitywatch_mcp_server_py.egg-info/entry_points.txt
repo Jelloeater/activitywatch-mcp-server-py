@@ -1,0 +1,2 @@
+[console_scripts]
+activitywatch-mcp-server-py = mcp_server_activitywatch.__init__:main
