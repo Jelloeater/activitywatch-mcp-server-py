@@ -5,6 +5,7 @@
 [![PyPI - Status](https://img.shields.io/pypi/status/activitywatch-mcp-server-py)](https://pypi.org/project/activitywatch-mcp-server-py/)
 [![PyPI](https://img.shields.io/pypi/v/activitywatch-mcp-server-py)](https://pypi.org/project/activitywatch-mcp-server-py/)
 [![GitHub](https://img.shields.io/github/license/Jelloeater/activitywatch-mcp-server-py)](https://github.com/Jelloeater/activitywatch-mcp-server-py/blob/main/LICENSE)
+[![MCPAmpel Trust Score](https://mcpampel.com/badge/jelloeater/activitywatch-mcp-server-py.svg)](https://mcpampel.com/repo/jelloeater/activitywatch-mcp-server-py)
 
 A Model Context Protocol (MCP) server that connects to [ActivityWatch](https://activitywatch.net/), allowing LLMs like Claude to interact with your time tracking data.
 
