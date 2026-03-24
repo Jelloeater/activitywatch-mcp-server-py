@@ -58,4 +58,17 @@ from .tools import (  # noqa: E402
     query_examples,
 )
 
+# Import resources to register them via decorators
+from .resources import (  # noqa: E402
+    buckets_resource,
+    bucket_events_resource,
+)
+
+# Import prompts to register them via decorators
+from .prompts import (  # noqa: E402
+    query_help,
+    daily_summary,
+    analyze_time_period,
+)
+
 __all__ = ["mcp"]
