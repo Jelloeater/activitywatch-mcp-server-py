@@ -42,7 +42,7 @@ async def list_buckets(
     try:
         api_base = ctx.lifespan_context["api_base"] if ctx else "http://localhost:5600/api/0"
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(follow_redirects=True) as client:
             response = await client.get(f"{api_base}/buckets", timeout=10.0)
             response.raise_for_status()
             buckets_data = response.json()
